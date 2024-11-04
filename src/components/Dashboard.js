@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Filters from './Filters';
 import IncidentDetails from './IncidentDetails';
 import { fetchMockIncidents } from '../services/pagerDutyService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
