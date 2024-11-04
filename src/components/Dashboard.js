@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import IncidentDetails from './IncidentDetails';
 import { fetchMockIncidents } from '../services/pagerDutyService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// Using Font Awesone library for icons
 import { faSort, faSortUp, faSortDown, faFilter } from '@fortawesome/free-solid-svg-icons';
 
 const Dashboard = () => {
@@ -11,8 +12,10 @@ const Dashboard = () => {
   const [expandedIncidentId, setExpandedIncidentId] = useState(null);
   const [sortConfig, setSortConfig] = useState({ sortBy: '', sortDirection: 'asc' });
   const [statusFilterVisible, setStatusFilterVisible] = useState(false);
-  const incidentsPerPage = 5;
+  const incidentsPerPage = 5; // set limit to 5 to enable pagination for mock data
 
+
+  // On page load to fetch all incidents
   useEffect(() => {
     const loadIncidents = async () => {
       const fetchedIncidents = await fetchMockIncidents();
@@ -21,6 +24,7 @@ const Dashboard = () => {
     loadIncidents();
   }, []);
 
+  //toggle between asc and desc sort based on sotConfig state
   const handleSortChange = (column) => {
     setSortConfig((prevConfig) => ({
       sortBy: column,
@@ -28,16 +32,21 @@ const Dashboard = () => {
     }));
   };
 
+
+  // checking id to display incident details
   const handleDetailsClick = (id) => {
     setExpandedIncidentId((prevId) => (prevId === id ? null : id));
   };
 
+
+   // function to filter data based on selection
   const handleStatusFilterChange = (status) => {
     setFilters((prevFilters) => ({ ...prevFilters, status }));
     setCurrentPage(1);
     setStatusFilterVisible(false);
   };
 
+  // filter mock data based on sort and filter values selected
   const filteredAndSortedIncidents = [...incidents]
     .filter((incident) => {
       return (

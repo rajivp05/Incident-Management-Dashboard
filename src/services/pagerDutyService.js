@@ -1,10 +1,15 @@
 // import axios from 'axios';
-import exampleResponse from '../mockData';
+import exampleResponse from '../mocks/mockData';
+
+
+ // Using mock data for UI since actual API does not fetch any incidents.
 
 export const fetchMockIncidents = async () => {
     return exampleResponse.incidents;
   };
 
+
+  // Leaving the API call code below as it is for reference
 
 // const API_URL = 'https://api.pagerduty.com/incidents';
 // const API_TOKEN = process.env.REACT_APP_PAGERDUTY_API_TOKEN;

@@ -1,3 +1,6 @@
+
+// No longer using this file since filter and sort are directly implemented in the table isntead of having dropdowns
+
 import React from 'react';
 
 const Filters = ({ setFilters }) => {
