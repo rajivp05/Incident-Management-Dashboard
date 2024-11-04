@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Error boundary wrapping to handle API errors. Currently not implemented in code since data being used is mocked.
+// Error boundary wrapping to handle API errors.
 
 class ErrorBoundary extends React.Component {
   constructor(props) {

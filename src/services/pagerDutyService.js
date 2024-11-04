@@ -1,15 +1,18 @@
-// import axios from 'axios';
-import exampleResponse from '../mocks/mockData';
+
+ // Using mock server for UI
+
+ export const fetchMockIncidents = async (page = 1, incidentsPerPage = 10) => {
+  const response = await fetch(`/api/incidents?page=${page}&incidentsPerPage=${incidentsPerPage}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch incidents');
+  }
+  const data = await response.json();
+  return data; 
+};
 
 
- // Using mock data for UI since actual API does not fetch any incidents.
 
-export const fetchMockIncidents = async () => {
-    return exampleResponse.incidents;
-  };
-
-
-  // Leaving the API call code below as it is for reference
+// Leaving the API call code below as it is for reference
 
 // const API_URL = 'https://api.pagerduty.com/incidents';
 // const API_TOKEN = process.env.REACT_APP_PAGERDUTY_API_TOKEN;

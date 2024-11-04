@@ -1,30 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import IncidentDetails from './IncidentDetails';
 import { fetchMockIncidents } from '../services/pagerDutyService';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// Using Font Awesone library for icons
-import { faSort, faSortUp, faSortDown, faFilter } from '@fortawesome/free-solid-svg-icons';
+import IncidentTable from './IncidentTable';
+import ChartModal from './ChartModal';
 
 const Dashboard = () => {
   const [incidents, setIncidents] = useState([]);
+  const [totalIncidents, setTotalIncidents] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({ status: '', urgency: '' });
   const [expandedIncidentId, setExpandedIncidentId] = useState(null);
   const [sortConfig, setSortConfig] = useState({ sortBy: '', sortDirection: 'asc' });
   const [statusFilterVisible, setStatusFilterVisible] = useState(false);
-  const incidentsPerPage = 5; // set limit to 5 to enable pagination for mock data
+  const [isBreakdownVisible, setBreakdownVisible] = useState(false);
+  const incidentsPerPage = 10;
 
-
-  // On page load to fetch all incidents
+  // Fetch incidents whenever currentPage or filters change
   useEffect(() => {
     const loadIncidents = async () => {
-      const fetchedIncidents = await fetchMockIncidents();
+      const { incidents: fetchedIncidents, total } = await fetchMockIncidents(currentPage, incidentsPerPage);
       setIncidents(fetchedIncidents);
+      setTotalIncidents(total);
     };
     loadIncidents();
-  }, []);
+  }, [currentPage, filters]);
 
-  //toggle between asc and desc sort based on sotConfig state
   const handleSortChange = (column) => {
     setSortConfig((prevConfig) => ({
       sortBy: column,
@@ -32,21 +31,16 @@ const Dashboard = () => {
     }));
   };
 
-
-  // checking id to display incident details
   const handleDetailsClick = (id) => {
     setExpandedIncidentId((prevId) => (prevId === id ? null : id));
   };
 
-
-   // function to filter data based on selection
   const handleStatusFilterChange = (status) => {
     setFilters((prevFilters) => ({ ...prevFilters, status }));
     setCurrentPage(1);
     setStatusFilterVisible(false);
   };
 
-  // filter mock data based on sort and filter values selected
   const filteredAndSortedIncidents = [...incidents]
     .filter((incident) => {
       return (
@@ -63,86 +57,64 @@ const Dashboard = () => {
         return order * a.urgency.localeCompare(b.urgency);
       }
       return 0;
-    })
-    .slice((currentPage - 1) * incidentsPerPage, currentPage * incidentsPerPage);
+    });
 
-  const nextPage = () => setCurrentPage((prevPage) => prevPage + 1);
+  const chartData = () => {
+    const statusCounts = incidents.reduce((acc, incident) => {
+      acc[incident.status] = (acc[incident.status] || 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.keys(statusCounts).map((status) => {
+      let color;
+
+      if (status === 'resolved') color = '#58c14a';    
+      else if (status === 'acknowledged') color = '#398de7'; 
+      else if (status === 'triggered') color = '#e73d61'; 
+  
+      return {
+        name: status.charAt(0).toUpperCase() + status.slice(1),
+        y: statusCounts[status],
+        color: color,
+      };
+    });
+  };
+
+  const nextPage = () => {
+    if (currentPage * incidentsPerPage < totalIncidents) {
+      setCurrentPage((prevPage) => prevPage + 1);
+    }
+  };
+
   const prevPage = () => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
 
   return (
     <div className="dashboard-container">
       <h1>Incident Management Dashboard</h1>
-      <p className="incident-count">Total Incidents (All): {incidents.length}</p>
-      <div className="filters">
-      </div>
-      <div className="table-container">
-        <div className="table-header">
-          <div className="header-cell">
-            Status
-            <FontAwesomeIcon
-              icon={faFilter}
-              onClick={() => setStatusFilterVisible(!statusFilterVisible)}
-              style={{ cursor: 'pointer', marginLeft: '5px' }}
-            />
-            {statusFilterVisible && (
-              <div className="status-filter-dialog">
-                <button onClick={() => handleStatusFilterChange('')}>All</button>
-                <button onClick={() => handleStatusFilterChange('triggered')}>Triggered</button>
-                <button onClick={() => handleStatusFilterChange('acknowledged')}>Acknowledged</button>
-                <button onClick={() => handleStatusFilterChange('resolved')}>Resolved</button>
-              </div>
-            )}
-          </div>
-          <div className="header-cell" onClick={() => handleSortChange('urgency')}>
-            Urgency
-            <FontAwesomeIcon
-              icon={
-                sortConfig.sortBy === 'urgency'
-                  ? sortConfig.sortDirection === 'asc'
-                    ? faSortUp
-                    : faSortDown
-                  : faSort
-              }
-              style={{ cursor: 'pointer', marginLeft: '5px' }}
-            />
-          </div>
-          <div className="header-cell">Title</div>
-          <div className="header-cell" onClick={() => handleSortChange('created_at')}>
-            Created
-            <FontAwesomeIcon
-              icon={
-                sortConfig.sortBy === 'created_at'
-                  ? sortConfig.sortDirection === 'asc'
-                    ? faSortUp
-                    : faSortDown
-                  : faSort
-              }
-              style={{ cursor: 'pointer', marginLeft: '5px' }}
-            />
-          </div>
-          <div className="header-cell"></div>
-        </div>
-        {filteredAndSortedIncidents.map((incident) => (
-          <React.Fragment key={incident.id}>
-            <div className="table-row">
-              <div className="cell">{incident.status}</div>
-              <div className="cell">{incident.urgency}</div>
-              <div className="cell">{incident.title}</div>
-              <div className="cell">{new Date(incident.created_at).toLocaleString()}</div>
-              <div className="cell">
-                <button onClick={() => handleDetailsClick(incident.id)}>
-                  {expandedIncidentId === incident.id ? 'Hide Details' : 'Show Details'}
-                </button>
-              </div>
-            </div>
-            {expandedIncidentId === incident.id && <IncidentDetails incident={incident} />}
-          </React.Fragment>
-        ))}
-      </div>
+      <p className="incident-count">
+        Total Incidents (All): {totalIncidents}
+        <button className="view-breakdown-button" onClick={() => setBreakdownVisible(true)}>View Breakdown</button>
+      </p>
+      <IncidentTable
+          incidents={filteredAndSortedIncidents}
+          expandedIncidentId={expandedIncidentId}
+          onDetailsClick={handleDetailsClick}
+          onSortChange={handleSortChange}
+          onStatusFilterChange={handleStatusFilterChange}
+          sortConfig={sortConfig}
+          statusFilterVisible={statusFilterVisible}
+          setStatusFilterVisible={setStatusFilterVisible}
+        />
       <div className="pagination-controls">
         <button onClick={prevPage} disabled={currentPage === 1}>Previous</button>
-        <button onClick={nextPage} disabled={filteredAndSortedIncidents.length < incidentsPerPage}>Next</button>
+        <button onClick={nextPage} disabled={currentPage * incidentsPerPage >= totalIncidents}>Next</button>
       </div>
+
+      <ChartModal
+        isVisible={isBreakdownVisible}
+        onClose={() => setBreakdownVisible(false)}
+        data={chartData()}
+      />
     </div>
   );
 };
