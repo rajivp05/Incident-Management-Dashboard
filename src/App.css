@@ -108,6 +108,10 @@ h1 {
   text-transform: capitalize;
 }
 
+.cell-margin {
+  margin-top: 8px;
+}
+
 .cell:nth-child(1) {
   color: #000000;
 }

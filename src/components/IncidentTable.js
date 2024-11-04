@@ -67,10 +67,10 @@ const IncidentTable = ({
         incidents.map((incident) => (
           <React.Fragment key={incident.id}>
             <div className="table-row">
-              <div className="cell cell-title">{incident.title}</div>
-              <div className="cell cell-status">{incident.status}</div>
-              <div className="cell">{new Date(incident.created_at).toLocaleString()}</div>
-              <div className="cell cell-urgency">{incident.urgency}</div>
+              <div className="cell cell-title cell-margin">{incident.title}</div>
+              <div className="cell cell-status cell-margin">{incident.status}</div>
+              <div className="cell cell-margin">{new Date(incident.created_at).toLocaleString()}</div>
+              <div className="cell cell-urgency cell-margin">{incident.urgency}</div>
               <div className="cell">
                 <button onClick={() => onDetailsClick(incident.id)}>
                   {expandedIncidentId === incident.id ? 'Hide Details' : 'Show Details'}
