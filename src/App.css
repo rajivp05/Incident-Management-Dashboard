@@ -70,6 +70,10 @@ h1 {
   border-bottom: 1px solid #ddd;
 }
 
+.header-title {
+  margin-left: 14px;
+}
+
 .table-row {
   display: flex;
   padding: 10px;
@@ -84,12 +88,28 @@ h1 {
 
 .cell {
   flex: 1;
-  padding: 8px;
+  padding: 12px;
   text-align: left;
+  font-size: 15px;
+}
+
+.cell-title {
+  font-weight: bold;
+  text-align: left; 
+}
+
+.cell-status {
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.cell-urgency {
+  padding-left: 20px;
+  text-transform: capitalize;
 }
 
 .cell:nth-child(1) {
-  color: #d9534f;
+  color: #000000;
 }
 
 .cell:nth-child(3) a {

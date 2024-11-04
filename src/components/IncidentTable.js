@@ -16,6 +16,7 @@ const IncidentTable = ({
   return (
     <div className="table-container">
       <div className="table-header">
+        <div className="header-cell header-title">Title</div>
         <div className="header-cell">
           Status
           <FontAwesomeIcon
@@ -32,11 +33,11 @@ const IncidentTable = ({
             </div>
           )}
         </div>
-        <div className="header-cell" onClick={() => onSortChange('urgency')}>
-          Urgency
+        <div className="header-cell" onClick={() => onSortChange('created_at')}>
+          Created
           <FontAwesomeIcon
             icon={
-              sortConfig.sortBy === 'urgency'
+              sortConfig.sortBy === 'created_at'
                 ? sortConfig.sortDirection === 'asc'
                   ? faSortUp
                   : faSortDown
@@ -45,12 +46,11 @@ const IncidentTable = ({
             style={{ cursor: 'pointer', marginLeft: '5px' }}
           />
         </div>
-        <div className="header-cell">Title</div>
-        <div className="header-cell" onClick={() => onSortChange('created_at')}>
-          Created
+        <div className="header-cell" onClick={() => onSortChange('urgency')}>
+          Urgency
           <FontAwesomeIcon
             icon={
-              sortConfig.sortBy === 'created_at'
+              sortConfig.sortBy === 'urgency'
                 ? sortConfig.sortDirection === 'asc'
                   ? faSortUp
                   : faSortDown
@@ -67,10 +67,10 @@ const IncidentTable = ({
         incidents.map((incident) => (
           <React.Fragment key={incident.id}>
             <div className="table-row">
-              <div className="cell">{incident.status}</div>
-              <div className="cell">{incident.urgency}</div>
-              <div className="cell">{incident.title}</div>
+              <div className="cell cell-title">{incident.title}</div>
+              <div className="cell cell-status">{incident.status}</div>
               <div className="cell">{new Date(incident.created_at).toLocaleString()}</div>
+              <div className="cell cell-urgency">{incident.urgency}</div>
               <div className="cell">
                 <button onClick={() => onDetailsClick(incident.id)}>
                   {expandedIncidentId === incident.id ? 'Hide Details' : 'Show Details'}
